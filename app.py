@@ -105,7 +105,8 @@ def update_home_tab(client, event, logger):
 
 @app.action("home_button")
 def action_home_button_click(body, ack, say):
-    # Acknowledge the action
+    # Acknowledge the action - this needs to identify a channel where the
+    # message will display
     ack()
     say(channel="CL1PDRL15", text=f"ring ring <@{body['user']['id']}>")
 
