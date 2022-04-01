@@ -1,29 +1,29 @@
-##Baby's First Slackbot
+# Baby's First Slackbot #
 *If running locally during development, skip ssh and scp commands*
-#setup
+## setup ##
 **SSH to matrix**
 
-ssh -i your-pem.key opc@its.public.ip
+`ssh -i your-pem.key opc@its.public.ip`
 
 **one time venv creation**
 
-python -V
+`python -V`
 
-use the version in following command
+use the python version in following command
 
-python3.6 -m venv ~/matrix
+`python3.6 -m venv ~/matrix`
 
 **activate venv**
 
-source ~/matrix/bin/activate
+`source ~/matrix/bin/activate`
 
 **get packages**
 
-pip3 install slack_bolt
+`pip3 install slack_bolt`
 
 **on local machine**
 
-scp /Users/you/agent_smith/app.py opc@its.public.ip:~
+`scp /Users/you/agent_smith/app.py opc@its.public.ip:~`
 
 **one time setup**
 
@@ -34,14 +34,15 @@ SLACK_BOT_TOKEN, SLACK_APP_TOKEN, SLACK_SIGNING_SECRET
 make app.py executable
 
 **start script and safely exit ssh session without Agent Smith turning off**
-nohup ./app.py &
-exit
+`nohup ./app.py &`
+`exit`
 
-#Future
+## Future ##
+
 **SSH to matrix**
 
-ssh -i your-pem.key opc@its.public.ip
+`ssh -i your-pem.key opc@its.public.ip`
 
 **view script output, if any**
 
-nano nohup.out
+`nano nohup.out`
