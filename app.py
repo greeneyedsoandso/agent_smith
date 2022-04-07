@@ -2,6 +2,7 @@
 # slackbot PoC JDSmith
 """hello there"""
 import os
+import random
 # Use the package we installed
 from slack_bolt import App
 from slack_bolt.adapter.socket_mode import SocketModeHandler
@@ -11,6 +12,19 @@ app = App(
     token=os.environ.get("SLACK_BOT_TOKEN"),
     signing_secret=os.environ.get("SLACK_SIGNING_SECRET")
 )
+
+
+@app.command("/doggo")
+# set this up in the Slack API console to make it work
+def doggo_command(ack, body):
+    user_id = body["user_id"]
+    id_number = random.randint(1, 233)
+    link = f"https://placedog.net/800/640?id={str(id_number)}"
+    payload = {"blocks": [{"type": "image", "title": {"type": "plain_text",
+                                                                 "text": "Dogs make it better"},
+                                      "image_url": link,
+                                      "alt_text": "Doggo"}]}
+    ack(payload)
 
 
 @app.command("/hello-socket-mode")
@@ -41,6 +55,21 @@ def message_hello(message, say):
             }
         ],
         text=f"Hey there <@{message['user']}>!",
+    )
+
+
+# Listens to incoming messages that contain "puppy"
+@app.message("puppy")
+def message_puppy(say):
+    # say() sends a message to the channel where the event was triggered
+    say(
+        blocks=[
+            {"type": "image",
+             "title": {"type": "plain_text", "text": "Please enjoy this photo of a puppy"},
+             "block_id": "image4", "image_url": "https://place-puppy.com/500x500",
+             "alt_text": "An incredibly cute puppy."}
+        ],
+        text="An incredibly cute puppy."
     )
 
 
@@ -114,3 +143,4 @@ def action_home_button_click(body, ack, say):
 # Start your app
 if __name__ == "__main__":
     SocketModeHandler(app, os.environ["SLACK_APP_TOKEN"]).start()
+
