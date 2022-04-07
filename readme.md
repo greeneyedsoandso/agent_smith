@@ -34,7 +34,9 @@ SLACK_BOT_TOKEN, SLACK_APP_TOKEN, SLACK_SIGNING_SECRET
 make app.py executable
 
 **start script and safely exit ssh session without Agent Smith turning off**
+
 `nohup ./app.py &`
+
 `exit`
 
 ## Future ##
