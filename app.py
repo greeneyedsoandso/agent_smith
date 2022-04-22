@@ -6,15 +6,19 @@ import random
 # Use the package we installed
 from slack_bolt import App
 from slack_bolt.adapter.socket_mode import SocketModeHandler
+from slack_bolt.adapter.flask import SlackRequestHandler
 
+from flask import Flask, request
+# Web server stuff
+app = Flask(__name__)
 # Initializes your app with your bot token and signing secret
-app = App(
+bolt_app = App(
     token=os.environ.get("SLACK_BOT_TOKEN"),
     signing_secret=os.environ.get("SLACK_SIGNING_SECRET")
 )
 
 
-@app.command("/doggo")
+@bolt_app.command("/doggo")
 # set this up in the Slack API console to make it work
 def doggo_command(ack, body):
     user_id = body["user_id"]
@@ -27,26 +31,26 @@ def doggo_command(ack, body):
     ack(payload)
 
 
-@app.command("/hello-socket-mode")
+@bolt_app.command("/hello-socket-mode")
 def hello_command(ack, body):
     user_id = body["user_id"]
     ack(f"You hear that <@{user_id}>?... That is the sound of inevitability.")
 
 
-@app.event("app_mention")
+@bolt_app.event("app_mention")
 def event_test(say):
     say("Mister Anderson")
 
 
 # Listens to incoming messages that contain "hello"
-@app.message("hello")
+@bolt_app.message("hello")
 def message_hello(message, say):
     # say() sends a message to the channel where the event was triggered
     say(
         blocks=[
             {
                 "type": "section",
-                "text": {"type": "mrkdwn", "text": f"Hey there <@{message['user']}>!"},
+                "text": {"type": "mrkdwn", "text": f"<@{message['user']}>. Welcome back, we've missed you."},
                 "accessory": {
                     "type": "button",
                     "text": {"type": "plain_text", "text": "Click Me"},
@@ -54,12 +58,12 @@ def message_hello(message, say):
                 },
             }
         ],
-        text=f"Hey there <@{message['user']}>!",
+        text=f"<@{message['user']}>. Welcome back, we've missed you.",
     )
 
 
 # Listens to incoming messages that contain "puppy"
-@app.message("puppy")
+@bolt_app.message("puppy")
 def message_puppy(say):
     # say() sends a message to the channel where the event was triggered
     say(
@@ -73,14 +77,14 @@ def message_puppy(say):
     )
 
 
-@app.action("button_click")
+@bolt_app.action("button_click")
 def action_button_click(body, ack, say):
     # Acknowledge the action
     ack()
     say(f"<@{body['user']['id']}> clicked the button")
 
 
-@app.event("app_home_opened")
+@bolt_app.event("app_home_opened")
 def update_home_tab(client, event, logger):
     try:
         # views.publish is the method that your app uses to push a view to the Home tab
@@ -132,7 +136,7 @@ def update_home_tab(client, event, logger):
         logger.error(f"Error publishing home tab: {e}")
 
 
-@app.action("home_button")
+@bolt_app.action("home_button")
 def action_home_button_click(body, ack, say):
     # Acknowledge the action - this needs to identify a channel where the
     # message will display
@@ -140,7 +144,21 @@ def action_home_button_click(body, ack, say):
     say(channel="CL1PDRL15", text=f"ring ring <@{body['user']['id']}>")
 
 
+@app.route("/")
+def hello_world():
+    return "<p>Hello there</p>"
+
+
+handler = SlackRequestHandler(bolt_app)
+
+
+@app.route("/slack/events", methods=["POST"])
+def slack_events():
+    return handler.handle(request)
+
+
 # Start your app
 if __name__ == "__main__":
-    SocketModeHandler(app, os.environ["SLACK_APP_TOKEN"]).start()
+    # SocketModeHandler(bolt_app, os.environ["SLACK_APP_TOKEN"]).start()
+    app.run(host='0.0.0.0', port=8080, debug=True)
 
