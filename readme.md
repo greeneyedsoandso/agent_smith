@@ -41,10 +41,4 @@ make app.py executable
 
 ## Future ##
 
-**SSH to matrix**
-
-`ssh -i your-pem.key opc@its.public.ip`
-
-**view script output, if any**
-
-`nano nohup.out`
+Actually put on nginx & gunicorn
